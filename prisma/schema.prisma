@@ -10,6 +10,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Dostępy {
+  ID     Int     @id @default(autoincrement())
+  Login  String
+  Hasło  String
+}
+
+model Lekarze {
+  ID               Int     @id @default(autoincrement())
+  Imię             String
+  Nazwisko         String
+  Specjalizacja    String
+  Numer_telefonu   BigInt
+}
+
+model Pacjenci {
+  ID               Int     @id @default(autoincrement())
+  Imię             String
+  Nazwisko         String
+  PESEL            BigInt
+  E-mail           String
+  Numer_telefonu   BigInt
+  Adres            String
+}
+
+model Rejestratorzy {
+  ID               Int     @id @default(autoincrement())
+  Imię             String
+  Nazwisko         String
+  Numer_telefonu   BigInt
+}
+
+model Usługi {
+  ID             Int     @id @default(autoincrement())
+  Rodzaj         String
+  ID_lekarskie   Int
+  Cena           Float
+  Czas_trwania   DateTime
+  Lekarze        Lekarze @relation(fields: [ID_lekarskie], references: [ID])
+}
+
+model Wizyty {
+  ID               Int     @id @default(autoincrement())
+  PESEL_pacjenta   BigInt
+  ID_pacjenta      Int
+  ID_lekarskie     Int
+  ID_usługi        Int
+  Data             DateTime
+  Godzina          DateTime @default(now())
+  Finansowanie     FinansowanieEnum
+  Lekarze          Lekarze @relation(fields: [ID_lekarskie], references: [ID])
+  Pacjenci         Pacjenci @relation(fields: [ID_pacjenta], references: [ID])
+  Usługi           Usługi   @relation(fields: [ID_usługi], references: [ID])
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
@@ -26,4 +80,10 @@ enum UserType {
   REGISTRATION_STAFF
   DOCTOR
   PATIENT
+}
+
+enum Finansowanie {
+  NFZ
+  Prywatnie
+  Benefit_System
 }
